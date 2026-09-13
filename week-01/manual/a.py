@@ -9,8 +9,6 @@ def is_valid(mark):
         else:
             return False
     return False
-       
-        
 
 a = 0
 valid_marks = []
@@ -23,13 +21,10 @@ for i in range(len(marks)):
     else:
         print("not valid")
 
-
-
 if len(valid_marks) == 0:
     print("No valid marks")
 else:
     total = 0
-
         
     for i in range(len(valid_marks)):
         total += valid_marks[i]
