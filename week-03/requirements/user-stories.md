@@ -3,7 +3,6 @@
 6 to 8 stories. Keep the shape exactly: ID, the As/I want/so that sentence, a priority, one
 assumption. Roles are **Student** or **Administrator** only.
 
-Delete the TODO lines as you fill them in — the checker treats a leftover TODO as unfinished work.
 
 ---
 ### US-01

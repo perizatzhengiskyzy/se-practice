@@ -67,11 +67,11 @@ One row per change you made. "Kept unchanged" is a valid row and needs a reason 
 | --- | --- | --- | --- |
 |Story 1 – View available study rooms |Rewrote the assumption | The original assumption says availability is stored in the system, which introduces an implementation detail not defined by the scenario. The story itself matches UC-01.|US-01|
 |Story 2 – Book an available study room|Kept unchanged|The story uses the Student actor, describes one clear and testable goal, and matches UC-02 Book room without adding out-of-scope functionality.|US-02|
-|Story 3 – View my current bookings|Deleted|Viewing personal bookings is not one of the six use cases defined in the scenario. The AI introduced functionality that is not supported by the supplied scope| --- |
+|Story 3 – View my current bookings|Deleted|Viewing personal bookings is not one of the six use cases defined in the scenario. The AI introduced functionality that is not supported by the supplied scope|N/A|
 |Story 4 – Cancel my booking |Kept unchanged |The story uses the Student actor, describes one clear and testable goal, and matches UC-03 Cancel booking. The assumption is also consistent with the scenario because a student cancels a booking they made. |US-03|
 |Story 5 – View all study room bookings |Rewrote the story and assumption |The scenario defines UC-05 as reviewing how rooms are used over a period, not viewing all bookings. I changed the story to match the defined use case more precisely. |US-04|
 |Story 6 – Manage study room availability |Rewrote the story and assumption |“Manage availability” is broader than the supplied scenario. I changed it to the specific UC-04 behavior: block or unblock a room. The assumption now reflects R4. |US-05|
-|Story 7 – Manage bookings |Deleted |The scenario does not give the Administrator a function to modify or cancel bookings. The assumption invents Administrator permissions that are not supported by any of the six defined use cases. | --- |
+|Story 7 – Manage bookings |Deleted |The scenario does not give the Administrator a function to modify or cancel bookings. The assumption invents Administrator permissions that are not supported by any of the six defined use cases. |N/A |
 |Story 8 – Prevent conflicting bookings |Rewrote the story and changed the actor to Student |Preventing overlapping bookings is R3, but the generated story incorrectly assigned this responsibility to the Administrator. I rewrote it as a Student booking goal constrained by R3. |US-06 |
 
 **Did the assistant invent anything outside the scenario?** Name it against the out-of-scope list in
@@ -88,7 +88,113 @@ I ended with 6 user stories because this is within the required range of 6–8. 
 ## 4. Original AI output — acceptance criteria (Part 3)
 
 ```
-(paste here)
+### US-02 — Book an available study room
+
+**Assumptions:**
+
+* Students can select from available future time slots.
+* A booking can last a maximum of 2 hours.
+* A room cannot have overlapping bookings.
+* Blocked rooms cannot be booked.
+
+**Acceptance Criteria:**
+
+1. **Successful booking**
+
+   * **Given** a student selects an available room and a future time slot
+   * **When** the student confirms the booking
+   * **Then** the system creates the booking successfully.
+
+2. **Future booking validation**
+
+   * **Given** a student selects a time that is in the past or starts now
+   * **When** the student tries to confirm the booking
+   * **Then** the system rejects the booking and asks the student to select a future time.
+
+3. **Maximum duration**
+
+   * **Given** a student selects a booking longer than two hours
+   * **When** the student tries to confirm the booking
+   * **Then** the system rejects the booking and indicates that the maximum duration is two hours.
+
+4. **Overlapping booking**
+
+   * **Given** the selected room already has a booking during the requested time
+   * **When** the student tries to confirm the booking
+   * **Then** the system rejects the booking and indicates that the room is unavailable.
+
+5. **Blocked room**
+
+   * **Given** the selected room is blocked
+   * **When** the student tries to book it
+   * **Then** the system rejects the booking and indicates that the room cannot be booked.
+
+---
+
+### US-03 — Cancel a booking
+
+**Assumptions:**
+
+* Students can cancel only their own bookings.
+* A cancelled booking releases the room for other students.
+* The booking exists in the system before cancellation.
+
+**Acceptance Criteria:**
+
+1. **Successful cancellation**
+
+   * **Given** a student has an active booking
+   * **When** the student selects cancel
+   * **Then** the system cancels the booking and makes the time slot available.
+
+2. **Own booking validation**
+
+   * **Given** a booking belongs to another student
+   * **When** the student tries to cancel it
+   * **Then** the system rejects the cancellation.
+
+3. **Non-existent booking**
+
+   * **Given** the student selects a booking that does not exist or has already been cancelled
+   * **When** the student tries to cancel it
+   * **Then** the system displays an error and does not create a cancellation.
+
+---
+
+### US-05 — Block or unblock a study room
+
+**Assumptions:**
+
+* Only administrators can block or unblock rooms.
+* A blocked room cannot be booked.
+* An unblocked room can become available for booking if it has no other restrictions.
+
+**Acceptance Criteria:**
+
+1. **Successful blocking**
+
+   * **Given** an administrator selects an available study room
+   * **When** the administrator blocks the room
+   * **Then** the system marks the room as blocked and prevents new bookings.
+
+2. **Successful unblocking**
+
+   * **Given** a study room is blocked
+   * **When** the administrator unblocks it
+   * **Then** the system marks the room as available for booking.
+
+3. **Blocked-room validation**
+
+   * **Given** a room is blocked
+   * **When** a student tries to book the room
+   * **Then** the system rejects the booking.
+
+4. **Unauthorized action**
+
+   * **Given** a user is not an administrator
+   * **When** the user tries to block or unblock a room
+   * **Then** the system rejects the action and does not change the room status.
+
 ```
 
 ---
@@ -97,26 +203,56 @@ I ended with 6 user stories because this is within the required range of 6–8. 
 
 | Criterion (as generated) | Problem | What I changed it to | Final ID |
 | --- | --- | --- | --- |
-| | | | |
+|US-02 Maximum duration |It tests only a duration longer than two hours and does not test the exact two-hour boundary |Added a criterion confirming that a booking lasting exactly two hours is accepted. |AC-01 |
+|US-02 Overlapping booking |It does not define whether a booking starting exactly when another booking ends is an overlap. |Clarified that a booking may start exactly when the previous booking for the same room ends |AC-02 |
+|US-05 Unauthorized action | It introduces a generic “user” and authorization behavior that is not defined in the supplied scenario. The scenario has exactly two actors and authentication is out of scope. |Removed this criterion because it introduces behavior outside the supplied scenario| N/A |
 
 **The two open questions.** Write your decision and the reason. Either answer is accepted.
 
 | Question | My decision | Why |
 | --- | --- | --- |
-| A booking ending exactly when another begins — overlap under R3? | allowed / not-allowed | |
-| Is exactly two hours allowed under R2? | allowed / not-allowed | |
+| A booking ending exactly when another begins — overlap under R3? | allowed |The bookings do not share any time interval, so I decided that the second booking may start exactly when the first one ends. |
+| Is exactly two hours allowed under R2? | allowed|R2 says a booking lasts “at most two hours”, so I interpret exactly two hours as permitted. |
 
 **Which invalid or boundary case did the assistant leave out?**
+
+The assistant did not cover two important boundary cases for US-02: a booking lasting exactly two hours and a booking starting exactly when another booking for the same room ends. I decided that both cases are allowed and added criteria to make these boundaries explicit.
 
 ---
 
 ## 6. Original AI output — use-case diagram (Part 4)
 
 ```
-(paste the PlantUML source exactly as generated)
+@startuml
+left to right direction
+
+actor Student
+actor Administrator
+
+rectangle "Smart Campus Study Room Booking System" {
+
+    usecase "View availability" as UC1
+    usecase "Book room" as UC2
+    usecase "Cancel booking" as UC3
+    usecase "Block or unblock room" as UC4
+    usecase "Review usage" as UC5
+    usecase "Send confirmation" as UC6
+}
+
+Student --> UC1
+Student --> UC2
+Student --> UC3
+
+Administrator --> UC4
+Administrator --> UC5
+
+UC2 ..> UC1 : <<include>>
+UC2 ..> UC6 : <<include>>
+
+@enduml
 ```
 
-Rendered diagram (image, or a link):
+Rendered diagram (image, or a link): ![Use-case diagram](requirements/use-cases.png)
 
 ---
 
@@ -124,24 +260,30 @@ Rendered diagram (image, or a link):
 
 | Element | Problem | What I changed |
 | --- | --- | --- |
-| | | |
+| UC-02 → UC-01 `<<include>>` | The assistant made View availability a required part of Book room, but the scenario does not state that viewing availability must always be performed as part of booking. | Removed the `<<include>>` relationship between UC-02 and UC-01. |
+| UC-03 → UC-06 | The assistant connected Send confirmation to Book room but omitted the same behavior for Cancel booking. UC-06 states that the system confirms a booking or a cancellation. | Added `UC-03 ..> UC-06 : <<include>>`. |
 
 **Associations.** Which actor–use-case links did the assistant draw that a person does not actually
 trigger? Name them.
 
+None. The assistant connected Student only to View availability, Book room, and Cancel booking, and Administrator only to Block or unblock room and Review usage. It did not connect an actor directly to Send confirmation. The incorrect association I identified was the use-case relationship UC-02 → UC-01, not an actor–use-case association.
+
 **Did any screen, database or internal component appear as a use case or an actor?**
 
+No. The generated diagram contained only the two required actors, Student and Administrator, and the six required use cases. No screens, databases, or internal components were added.
 ---
 
 ## 8. Traceability (Part 5)
 
 Summarise what the table in `requirements/traceability.md` shows:
 
-- Use cases with **no story** behind them:
-- Stories with **no use case** they belong to:
-- Criteria that test **no rule** from section 1:
+- Use cases with **no story** behind them: UC-06 Send confirmation.
+- Stories with **no use case** they belong to: none.
+- Criteria that test **no rule** from section 1: AC-06, AC-07, AC-08, AC-09, and AC-10 do not directly test R1–R4. They test the required behavior of UC-03 Cancel booking and UC-04 Block or unblock room. AC-11 directly tests R4.
 
 **What does the largest gap tell you about the generated requirements?**
+
+The largest gap is UC-06 Send confirmation because it has no user story or acceptance criteria behind it. The diagram includes it because it is one of the six required use cases, but the generated and revised user stories did not capture confirmation as a separate requirement. This shows that the generated requirements do not provide complete traceability for every required system function. I recorded the gap instead of creating an additional story only to hide it.
 
 ---
 
