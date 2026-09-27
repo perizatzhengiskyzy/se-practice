@@ -1,0 +1,38 @@
+schema: 1
+week: "03"
+
+student:
+  name: Perizat Zhengiskyzy
+  student_id: 24B031038
+  github: perizatzhengiskyzy
+
+assistant:
+  tool: ChatGPT
+  model: GPT-5.6 Luna
+
+counts:
+  user_stories: 6
+  acceptance_criteria_sets: 3
+
+checker:
+  pass: 23
+  fail: 0
+  error: 0
+  commit: 696696a
+
+assumptions:
+  overlap_touching_bookings: allowed
+  exactly_two_hours: allowed
+
+traceability:
+  use_cases_not_covered: [UC-06]
+  stories_not_traced: []
+
+review_findings:
+  - "UC-02 included UC-01 View availability even though the scenario does not require viewing availability as part of every booking."
+  - "UC-03 was missing an include relationship to UC-06 Send confirmation even though UC-06 confirms cancellations."
+  - "UC-06 Send confirmation has no supporting user story or acceptance criteria, so I recorded it as a traceability gap."
+
+honesty:
+  can_explain_everything_submitted: yes
+  ai_usage_disclosed: yes
