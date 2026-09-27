@@ -279,7 +279,7 @@ Summarise what the table in `requirements/traceability.md` shows:
 
 - Use cases with **no story** behind them: UC-06 Send confirmation.
 - Stories with **no use case** they belong to: none.
-- Criteria that test **no rule** from section 1: AC-06, AC-07, AC-08, AC-09, and AC-10 do not directly test R1–R4. They test the required behavior of UC-03 Cancel booking and UC-04 Block or unblock room. AC-11 directly tests R4.
+- Criteria that test **no rule** from section 1: AC-06, AC-07, AC-08, and AC-10 do not directly test R1–R4. They test the required behavior of UC-03 Cancel booking and UC-04 Block or unblock room. AC-09 and AC-11 relate to R4 because they cover the behavior of a blocked room.
 
 **What does the largest gap tell you about the generated requirements?**
 
@@ -295,23 +295,82 @@ Paste the **real terminal output** of both runs. A table with nothing behind it 
 $ python tests/check_requirements.py
 (paste)
 ```
+$ python tests/check_requirements.py
+PASS   US-1  user-stories.md         no placeholders left
+PASS   US-2  user-stories.md         6 stories, IDs US-01…US-06
+PASS   US-3  user-stories.md         every story has the required sentence shape
+PASS   US-4  user-stories.md         every story has a priority
+PASS   US-5  user-stories.md         every story declares an assumption
+PASS   US-6  user-stories.md         only Student and Administrator appear as roles
+PASS   US-7  user-stories.md         nothing from the out-of-scope list appears
+PASS   AC-1  acceptance-criteria.md  no placeholders left
+PASS   AC-2  acceptance-criteria.md  three sections, all naming real stories: US-02, US-03, US-05
+PASS   AC-3  acceptance-criteria.md  every section has 3 to 5 uniquely numbered criteria
+PASS   AC-4  acceptance-criteria.md  all 11 criteria are complete Given/When/Then
+PASS   AC-5  acceptance-criteria.md  every section covers an invalid or boundary case
+PASS   AC-6  acceptance-criteria.md  4 assumptions listed before the criteria
+PASS   AC-7  acceptance-criteria.md  both open questions are settled in the assumptions
+PASS   PU-1  use-cases.puml          valid PlantUML block, no placeholders
+PASS   PU-2  use-cases.puml          exactly two actors: Student, Administrator
+PASS   PU-3  use-cases.puml          all six use cases present
+PASS   PU-4  use-cases.puml          system boundary present
+PASS   PU-5  use-cases.puml          no screens, databases or internal components
+PASS   PU-6  use-cases.puml          no unjustified actor associations found
+PASS   TR-1  traceability.md         all six use cases have a row
+PASS   TR-2  traceability.md         every ID in the table resolves
+PASS   TR-3  traceability.md         every story appears in the table
+------------------------------------------------------------------------
+23 PASS · 0 FAIL · 0 ERROR   (23 checks)
+Shape is clean. This says nothing about whether the requirements are good.
 
 ```
 $ python tests/validate_submission.py
 (paste)
 ```
+$ python tests/validate_submission.py
+submission.yml — submission.yml
+------------------------------------------------------------------------
+PASS   schema                                    1
+PASS   week                                      03
+PASS   student.name                              Perizat Zhengiskyzy
+PASS   student.student_id                        24B031038
+PASS   student.github                            perizatzhengiskyzy
+PASS   assistant.tool                            ChatGPT
+PASS   assistant.model                           GPT-5.6 Luna
+PASS   counts.user_stories                       6
+PASS   counts.acceptance_criteria_sets           3
+PASS   checker                                   23 PASS · 0 FAIL · 0 ERROR
+NOTE   checker                                   you are claiming a clean run — it will be re-run at your commit, so make sure it is true
+PASS   checker.commit                            5f38321
+PASS   assumptions.overlap_touching_bookings     allowed
+PASS   assumptions.exactly_two_hours             allowed
+PASS   traceability.use_cases_not_covered        UC-06
+PASS   traceability.stories_not_traced           []
+PASS   review_findings                           3 findings
+PASS   review_findings[1]                        UC-02 included UC-01 View availability even though the scena…
+PASS   review_findings[2]                        UC-03 was missing an include relationship to UC-06 Send conf…
+PASS   review_findings[3]                        UC-06 Send confirmation has no supporting user story or acce…
+PASS   honesty.can_explain_everything_submitted  yes
+PASS   honesty.ai_usage_disclosed                yes
+------------------------------------------------------------------------
+21 PASS · 0 FAIL · 0 ERROR · 1 note
+Shape is fine. This says nothing about whether the work is good.
+
+```
 
 | | PASS | FAIL | ERROR |
 | --- | --- | --- | --- |
-| `check_requirements.py` | | | |
+| `check_requirements.py` | 23 | 0 | 0 |
 
-Commit these numbers were produced at (`git rev-parse --short HEAD`):
+Commit these numbers were produced at (`git rev-parse --short HEAD`): '5f38321'
 
-**Every FAIL, one line each: what it is and what you decided to do about it.** A FAIL you report and
-explain costs you nothing.
+**Every FAIL, one line each: what it is and what you decided to do about it.** 
 
-**Did you run the checks by hand instead of with Python?** Say so here — it costs nothing, but it
-has to be said.
+None. The final requirements checker run produced 0 FAIL and 0 ERROR.
+
+**Did you run the checks by hand instead of with Python?** 
+
+No. I ran the provided Python checkers.
 
 ---
 
@@ -325,5 +384,8 @@ Answer all three:
 3. You are handing these requirements to someone who will implement them, and you will not be in the
    room. Which single one would you rewrite first, and why?
 
-Be specific. "The AI was useful" is worth nothing; "UC-06 had no story behind it until I wrote
-US-07, and the checker is what told me" is worth everything.
+The most problematic part of the generated requirements was the use-case diagram. The assistant added an `<<include>>` relationship from UC-02 Book room to UC-01 View availability, although the scenario did not say that viewing availability must always be a required part of booking. It also connected UC-06 Send confirmation to booking but missed the confirmation after cancellation. Without the checker, I would have caught these problems by comparing every actor, use case, and relationship in the diagram with the fixed scenario and business rules.
+
+The assistant was useful for generating the first versions of the user stories and acceptance criteria. It quickly produced structured requirements with roles, goals, assumptions, and Given/When/Then criteria. Writing the same first draft manually would have taken me noticeably longer.
+
+If I were handing these requirements to a developer, I would rewrite UC-06 Send confirmation first. In my final traceability table, UC-06 has no supporting user story or acceptance criteria. This creates ambiguity about exactly when confirmation must be sent and what behavior is expected. I would clarify this requirement before implementation instead of leaving the developer to make assumptions.
