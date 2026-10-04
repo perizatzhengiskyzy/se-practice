@@ -21,7 +21,7 @@ activate BookingRepository
 BookingRepository --> BookingService : overlap result
 deactivate BookingRepository
 
-alt R1 valid and room not blocked and no overlap
+alt R1-R3 checks passed
     BookingService -> BookingRepository : save booking(student, room, startTime, duration)
     activate BookingRepository
     BookingRepository --> BookingService : booking saved(bookingId)
