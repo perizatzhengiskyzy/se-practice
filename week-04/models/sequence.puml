@@ -1,0 +1,37 @@
+@startuml
+title Book Room — US-02
+
+actor Student
+participant BookingService
+database BookingRepository
+
+Student -> BookingService : bookRoom(roomId, startTime, duration)
+activate BookingService
+
+BookingService -> BookingService : validate future start (R1)
+BookingService -> BookingService : validate duration > 0 and <= 2 hours (R1)
+
+BookingService -> BookingRepository : check blocked status(roomId)
+activate BookingRepository
+BookingRepository --> BookingService : blocked status
+deactivate BookingRepository
+
+BookingService -> BookingRepository : check overlapping active bookings(roomId, startTime, duration)
+activate BookingRepository
+BookingRepository --> BookingService : overlap result
+deactivate BookingRepository
+
+alt R1-R3 checks passed
+    BookingService -> BookingRepository : save booking(student, room, startTime, duration)
+    activate BookingRepository
+    BookingRepository --> BookingService : booking saved(bookingId)
+    deactivate BookingRepository
+
+    BookingService -> BookingService : create confirmation (R4)
+    BookingService --> Student : booking confirmed(bookingId)
+else Invalid time or room blocked or overlap
+    BookingService --> Student : booking rejected
+end
+
+deactivate BookingService
+@enduml

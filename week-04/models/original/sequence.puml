@@ -1,0 +1,34 @@
+@startuml
+title Book Room — US-02
+
+actor Student
+participant BookingService
+database BookingRepository
+
+Student -> BookingService : bookRoom(roomId, startTime, duration)
+activate BookingService
+
+BookingService -> BookingService : validate future start (R1)
+BookingService -> BookingService : validate duration > 0 and <= 2 hours (R1)
+BookingService -> BookingRepository : check room availability(roomId, startTime, duration)
+activate BookingRepository
+BookingRepository --> BookingService : availability result
+deactivate BookingRepository
+
+alt Room available
+    BookingService -> BookingService : validate no overlapping active booking (R2)
+    BookingService -> BookingService : validate room is not blocked (R3)
+
+    BookingService -> BookingRepository : save booking(student, room, start, duration)
+    activate BookingRepository
+    BookingRepository --> BookingService : booking saved
+    deactivate BookingRepository
+
+    BookingService -> BookingService : create confirmation (R4)
+    BookingService --> Student : booking confirmed(bookingId)
+else Room unavailable
+    BookingService --> Student : booking rejected(room unavailable)
+end
+
+deactivate BookingService
+@enduml

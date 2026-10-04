@@ -1,0 +1,40 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class Student {
+    - studentId : String
+    - name : String
+    + viewAvailableRooms() : List<Room>
+    + bookRoom(room : Room, start : DateTime, duration : Duration) : Booking
+    + cancelBooking(booking : Booking) : void
+}
+
+class Room {
+    - roomId : String
+    - name : String
+    - blocked : Boolean
+    + isAvailable(start : DateTime, duration : Duration) : Boolean
+    + block() : void
+    + unblock() : void
+}
+
+class Booking {
+    - bookingId : String
+    - startTime : DateTime
+    - duration : Duration
+    - status : BookingStatus
+    + cancel() : void
+    + overlaps(other : Booking) : Boolean
+    + confirm() : void
+}
+
+enum BookingStatus {
+    ACTIVE
+    CANCELLED
+    CONFIRMED
+}
+
+Student "1" -- "0..*" Booking : makes
+Room "1" -- "0..*" Booking : has
+@enduml

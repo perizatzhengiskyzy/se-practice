@@ -1,0 +1,59 @@
+@startuml
+left to right direction
+
+actor Student
+actor Administrator
+
+rectangle "Smart Campus Study Room Booking System" {
+
+  usecase "View Available\nStudy Rooms" as UC1
+  usecase "Book Study Room" as UC2
+  usecase "Cancel Own Booking" as UC3
+  usecase "Review Study Room\nUsage" as UC4
+  usecase "Block / Unblock\nStudy Room" as UC5
+  usecase "Check Booking\nTime Availability" as UC6
+  usecase "Confirm Successful\nBooking" as UC7
+}
+
+Student --> UC1
+Student --> UC2
+Student --> UC3
+Student --> UC6
+
+Administrator --> UC4
+Administrator --> UC5
+
+UC2 ..> UC6 : <<include>>
+UC2 ..> UC7 : <<include>>
+
+note right of UC2
+R1: Start is in the future;
+duration > 0 and <= 2 hours.
+R2: Same-room active bookings
+cannot overlap.
+R3: Blocked rooms cannot
+accept new bookings.
+end note
+
+note right of UC5
+R3: Blocking a room prevents
+new bookings; unblocking
+makes it available again.
+end note
+
+note bottom
+Assumptions:
+1. "View Available Study Rooms" considers whether a room
+   can accept a booking for the student's selected time.
+2. "Check Booking Time Availability" represents the
+   overlap/time validation needed by US-02 and US-06.
+3. A successful booking always produces a confirmation
+   (R4), so confirmation is included in booking.
+4. Students may cancel only their own bookings (scenario).
+5. Administrators can block and unblock study rooms and
+   review usage; no additional administrator goals are assumed.
+6. No payment, equipment, recurring booking, waiting list,
+   extra notifications, or registration use cases are modeled.
+end note
+
+@enduml
