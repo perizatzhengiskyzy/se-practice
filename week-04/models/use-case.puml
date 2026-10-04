@@ -1,0 +1,56 @@
+@startuml
+left to right direction
+
+actor Student
+actor Administrator
+
+rectangle "Smart Campus Study Room Booking System" {
+
+  usecase "View Available\nStudy Rooms" as UC1
+  usecase "Book Study Room" as UC2
+  usecase "Cancel Own Booking" as UC3
+  usecase "Review Study Room\nUsage" as UC4
+  usecase "Block / Unblock\nStudy Room" as UC5
+  usecase "Check Booking\nTime Availability" as UC6
+  usecase "Confirm Successful\nBooking" as UC7
+}
+
+Student --> UC1
+Student --> UC2
+Student --> UC3
+
+Administrator --> UC4
+Administrator --> UC5
+
+' why: US-02 and US-06 require booking availability and overlap validation
+UC2 ..> UC6 : <<include>>
+
+' why: R4 requires every successful booking to produce a confirmation
+UC2 ..> UC7 : <<include>>
+
+note right of UC2
+R1: Start is in the future;
+duration > 0 and <= 2 hours.
+R2: Same-room active bookings
+cannot overlap.
+R3: Blocked rooms cannot
+accept new bookings.
+end note
+
+note right of UC5
+R3: Blocking a room prevents
+new bookings; unblocking
+makes it available again.
+end note
+
+note bottom
+Assumptions:
+1. Touching bookings do not overlap:
+   one booking may start exactly when another ends.
+2. Blocking a room prevents new bookings
+   but does not cancel existing bookings.
+3. Students may cancel only their own bookings.
+4. No out-of-scope features are modeled.
+end note
+
+@enduml
