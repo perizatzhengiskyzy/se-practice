@@ -75,10 +75,13 @@
 
 <!-- One row per association in classes.puml, read in both directions. -->
 
+
 | Association | Read left to right | Read right to left |
 | --- | --- | --- |
-| Course — CourseOffering | One Course has zero or more CourseOfferings. | Each CourseOffering belongs to exactly one Course |
-| Student — Enrollment | One Student has zero or more Enrollments. |Each Enrollment belongs to exactly one Student.| CourseOffering — Enrollment | One CourseOffering has zero or more Enrollments. | Each Enrollment belongs to exactly one CourseOffering. |
+| Course — CourseOffering | One Course has zero or more CourseOfferings. | Each CourseOffering belongs to exactly one Course. |
+| Student — Enrollment | One Student has zero or more Enrollments. | Each Enrollment belongs to exactly one Student. |
+| CourseOffering — Enrollment | One CourseOffering has zero or more Enrollments. | Each Enrollment belongs to exactly one CourseOffering. |
+
 
 **How an Enrollment links a student to an offering:** Each Enrollment connects exactly one Student with exactly one CourseOffering. The enrollment represents successful registration in a particular offering.
 
@@ -118,19 +121,39 @@
 | Explicit transaction messages | Rejected | The assignment permits an atomic group and explanatory note, so implementation-specific transaction messages are unnecessary for this UML model. | R2, R4 |
 | Available places consistency | Modified | I clarified that availablePlaces is maintained data updated together with successful Enrollment creation, preventing inconsistencies between availability and enrollment count. | R1, R2, R4 |
 | Duplicate registration protection | Modified | I clarified uniqueness for each Student-CourseOffering pair because association multiplicities alone cannot prevent duplicate enrollment records. | R3, R5 |
+| Prompt B missing approved requirements | Rejected retrospective change | The original Prompt B did not include the complete approved stories and acceptance criteria. I kept the actual AI exchange unchanged instead of rewriting the prompt after receiving the response. | R1–R5 |
 ## 8. Modeling explanation
 
 <!-- 200–300 words. Your main design choices; how the class diagram and the sequence diagram
      complement each other; why an activity diagram could also help explain the workflow. -->
 
-(write here)
+The purpose of my UML models is to describe how students register for university course offerings. I used a sequence diagram and a class diagram because they represent different aspects of the system.
+
+The sequence diagram shows how registration works step by step. First, a student opens the course catalog and selects an offering. The system displays course information and available places. However, browsing the catalog does not reserve a place because availability can change before registration.
+
+When the student requests registration, the system checks whether the student is already enrolled and whether there are available places. These checks and enrollment creation happen as one atomic operation. This prevents multiple students from taking the same last available place.
+
+The sequence diagram includes three possible outcomes. If the student is already enrolled, the system rejects the request. If the course is full, registration is also rejected. Otherwise, the system creates one Enrollment, updates available places and sends confirmation.
+
+The class diagram describes the structure of the system. It includes four classes: Student, Course, CourseOffering and Enrollment. Each Enrollment connects one Student to one CourseOffering. The diagram also shows associations and their multiplicities.
+
+I added separate notes for capacity and uniqueness because multiplicities alone cannot represent these restrictions. This makes the system requirements clearer.
+
+An activity diagram could also be useful because it would show the registration workflow as decisions and actions. It could make the success and rejection paths easier to understand without focusing on individual system messages.
 
 ## 9. Reflection
 
 <!-- 150–200 words. Written by you, not by the assistant: where AI helped, one decision you
      made yourself, one remaining limitation. Specific beats flattering. -->
+During this assignment, I used ChatGPT to help create user stories, acceptance criteria, and UML diagrams for a university course registration system. AI helped me understand how to connect system requirements with UML models. However, I noticed that the first diagrams were not perfect and needed additional review.
 
-(write here)
+I checked the diagrams against the requirements and four test cases. One decision I made was to keep the atomic registration group instead of adding detailed database transaction messages. I think this was a better choice because the assignment focuses on UML modeling rather than implementation details.
+
+I also clarified how the system checks available places and prevents duplicate registrations. These changes made the diagrams easier to understand.
+
+One limitation of AI is that it can generate diagrams that look correct but still contain unclear conditions. Also, UML notes describe the rules but do not guarantee that real software will enforce them.
+
+This assignment helped me understand that AI is useful for creating initial models, but students still need to review the results, make decisions, and verify their correctness.
 
 ## 10. Appendix A — Before AI
 
@@ -205,6 +228,32 @@ As a student, I want to register for a selected course offering so that I can re
 ### US-03 — Handle Registration Rejections
 
 As a student, I want to receive a clear explanation when my registration is rejected so that I understand why I cannot enroll in the selected offering.
+
+### Acceptance Criteria
+
+AC-01 — View catalog (R1)
+Given a student is signed in and selects a semester, When the student browses the course catalog, Then the system displays the course code, title, course offering and available places for that semester.
+
+AC-02 — Catalog does not reserve places (R1, R2)
+Given a student views an offering with available places, When the student selects the offering without completing registration, Then no Enrollment is created, no place is reserved, and availability must be rechecked when registration is requested.
+
+AC-03 — Successful registration (R2, R3, R4)
+Given an offering has capacity 2 and enrollment count 0, and the student is not enrolled, When the student requests registration, Then the system checks for duplicates and available capacity, creates exactly one Enrollment, updates the count to 1 and confirms registration.
+
+AC-04 — Register for the last available place (R2, R4)
+Given an offering has capacity 2 and enrollment count 1, and the student is not enrolled, When the student requests registration, Then the system performs the final checks and enrollment creation atomically, creates exactly one Enrollment, updates the count to 2 and confirms registration.
+
+AC-05 — Duplicate registration (R3, R5)
+Given a student is already enrolled in an offering, When the student requests registration for the same offering again, Then the system rejects the request with "already enrolled", creates no Enrollment and leaves the enrollment count unchanged.
+
+AC-06 — Course full (R2, R5)
+Given the catalog previously showed an available place but the current enrollment count equals the offering capacity, and the student is not enrolled, When the student requests registration, Then the system rechecks current capacity, rejects the request with "course full", creates no Enrollment and leaves the count unchanged.
+
+### Uncertainty
+1. The assignment does not specify the exact format of student identifiers.
+2. The assignment does not define additional enrollment statuses.
+3. The implementation technology for atomic registration is not specified. The UML model will represent atomic registration without choosing a specific database or locking mechanism.
+No out-of-scope features were added.
 ~~~~
 
 ### B2 — UML drafts (Prompt B)
@@ -225,28 +274,119 @@ Class: show domain concepts, useful attributes and multiplicities. State the cap
 **Response:**
 
 ~~~~text
-## 2. User stories and acceptance criteria
+## Sequence Diagram
+The diagram shows browsing, selection and registration. The Registration UI, Service and Store are technical lifelines.
 
-### US-01 — Browse offerings
+```plantuml
+@startuml
+title SIS 02 - Course Registration Sequence
 
-**US-01:** As a student, I want to browse course offerings for a semester so that I can see available courses and places before registration.
+actor Student
+boundary "Registration UI" as UI
+control "Registration Service" as Service
+database "Registration Store" as Store
 
-- **AC-01** (R1): Given a student selects a semester, When the student opens the catalog, Then the system displays course codes, titles, offerings and available places.
-- **AC-02** (R1, R2): Given a student views an offering, When the student selects it without registering, Then no place is reserved and availability must be rechecked during registration.
+Student -> UI : browseCatalog(semester)
+UI -> Store : getCatalogOfferings(semester)
+Store --> UI : code, title, offering, availablePlaces
+UI --> Student : showCatalog()
 
-### US-02 — Register for an offering
+Student -> UI : selectOffering(offeringId)
+UI --> Student : showOfferingDetails()
 
-**US-02:** As a student, I want to register for a selected offering so that I can receive confirmation of my enrollment.
+note over Student, UI
+Browsing and selection do not reserve places.
+end note
 
-- **AC-03** (R2, R3, R4): Given an offering has capacity 2 and zero enrollments, and the student is not enrolled, When the student requests registration, Then the system checks duplicates and capacity, creates exactly one Enrollment, updates the count to 1 and confirms registration.
-- **AC-04** (R2, R3, R4): Given an offering has capacity 2 and one enrollment, and the student is not enrolled, When registration is requested, Then the system atomically checks duplicates and capacity, creates one Enrollment, updates the count to 2 and confirms registration.
+Student -> UI : register(offeringId)
+UI -> Service : register(studentId, offeringId)
 
-### US-03 — Receive a clear rejection
+group atomic registration
+note over Service, Store
+Final checks, Enrollment creation and
+availability update are one atomic transaction.
+Competing requests cannot take the same last place.
+end note
 
-**US-03:** As a student, I want to receive a clear rejection message so that I understand why my registration failed.
+Service -> Store : checkDuplicate(studentId, offeringId)
+Store --> Service : duplicate
 
-- **AC-05** (R3, R5): Given a student is already enrolled in an offering, When the student requests registration again, Then the system returns "already enrolled", creates no Enrollment and leaves the count unchanged.
-- **AC-06** (R2, R5): Given the catalog previously showed a free place but the current offering is full, and the student is not enrolled, When registration is requested, Then the system returns "course full", creates no Enrollment and leaves the count unchanged.
+Service -> Store : getCurrentEnrollmentCount(offeringId)
+Store --> Service : count
+
+Service -> Store : getCapacity(offeringId)
+Store --> Service : capacity
+
+alt already enrolled
+    Service --> UI : reject("already enrolled")
+    UI --> Student : showError("already enrolled")
+else course full
+    Service --> UI : reject("course full")
+    UI --> Student : showError("course full")
+else not enrolled and places left
+    Service -> Store : createEnrollment(studentId, offeringId)
+    Store --> Service : enrollmentId
+    Service -> Store : updateAvailability(offeringId)
+    Store --> Service : availablePlaces
+    Service --> UI : confirm(enrollmentId)
+    UI --> Student : showConfirmation(enrollmentId)
+end
+end
+
+@enduml
+```
+
+## Class Diagram
+The diagram shows the four required domain classes, their associations, capacity and uniqueness notes.
+
+```plantuml
+@startuml
+title SIS 02 - Course Registration Classes
+
+class Student {
+    +studentId : String
+}
+
+class Course {
+    +code : String
+    +title : String
+}
+
+class CourseOffering {
+    +offeringId : String
+    +semester : String
+    +capacity : int
+    +availablePlaces : int
+}
+
+class Enrollment {
+    +enrollmentId : String
+    +createdAt : DateTime
+}
+
+Course "1" -- "0..*" CourseOffering : has >
+Student "1" -- "0..*" Enrollment : holds >
+CourseOffering "1" -- "0..*" Enrollment : receives >
+
+note right of CourseOffering
+Capacity constraint (R2):
+capacity > 0
+Enrollment count <= capacity
+availablePlaces = capacity - Enrollment count
+end note
+
+note right of Enrollment
+Uniqueness constraint (R3):
+One Student can have at most one
+Enrollment for the same CourseOffering.
+Each Enrollment links exactly one
+Student and one CourseOffering.
+end note
+
+@enduml
+```
+
+The sequence diagram describes the interaction order and outcomes. The class diagram describes domain entities, their attributes and multiplicities. The technical UI, Service and Store lifelines do not need to appear as domain classes. Browsing reserves no place and final checks and creation are atomic.
 ~~~~
 
 ### B3 — Model critique (Prompt C)
@@ -262,6 +402,136 @@ Class: show domain concepts, useful attributes and multiplicities. State the cap
 Review these two UML models against R1–R5 and my acceptance criteria. Check message order, guards, state changes, multiplicities and naming.
 Inspect the four validation cases: available places, exactly one place, full course after a stale catalog view, and duplicate registration.
 For each issue, cite the affected rule and model element. Explain the impact and propose a focused correction. Separate genuine defects from optional design choices.
+
+FOLLOW-UP IN THE SAME NEW CHAT, AFTER THE ASSISTANT REQUESTED THE MODELS:
+
+Here are my original UML models, rules R1–R5, and approved acceptance criteria. Please perform the concrete model critique requested in my previous message.
+
+RULES:
+R1. Catalog: Show the course code, title, offering and available places for one semester.
+R2. Capacity: Recheck current availability when registering. Enrollment must never exceed the offering's capacity.
+R3. Duplicates: A student may have at most one enrollment in the same offering. Reject a repeat request.
+R4. Success: Create exactly one Enrollment linking the student and offering, update availability and return a confirmation.
+R5. Rejection: Explain "course full" or "already enrolled". Create no enrollment and leave the enrollment count unchanged.
+Catalog viewing does not reserve a place. Final registration checks and creation must be atomic.
+
+MODEL 1 — ORIGINAL SEQUENCE DIAGRAM:
+```plantuml
+@startuml
+title SIS 02 - Course Registration Sequence
+
+actor Student
+boundary "Registration UI" as UI
+control "Registration Service" as Service
+database "Registration Store" as Store
+
+Student -> UI : browseCatalog(semester)
+UI -> Store : getCatalogOfferings(semester)
+Store --> UI : code, title, offering, availablePlaces
+UI --> Student : showCatalog()
+
+Student -> UI : selectOffering(offeringId)
+UI --> Student : showOfferingDetails()
+
+note over Student, UI
+Browsing and selection do not reserve places.
+end note
+
+Student -> UI : register(offeringId)
+UI -> Service : register(studentId, offeringId)
+
+group atomic registration
+note over Service, Store
+Final checks, Enrollment creation and
+availability update are one atomic transaction.
+Competing requests cannot take the same last place.
+end note
+
+Service -> Store : checkDuplicate(studentId, offeringId)
+Store --> Service : duplicate
+
+Service -> Store : getCurrentEnrollmentCount(offeringId)
+Store --> Service : count
+
+Service -> Store : getCapacity(offeringId)
+Store --> Service : capacity
+
+alt already enrolled
+    Service --> UI : reject("already enrolled")
+    UI --> Student : showError("already enrolled")
+else course full
+    Service --> UI : reject("course full")
+    UI --> Student : showError("course full")
+else not enrolled and places left
+    Service -> Store : createEnrollment(studentId, offeringId)
+    Store --> Service : enrollmentId
+    Service -> Store : updateAvailability(offeringId)
+    Store --> Service : availablePlaces
+    Service --> UI : confirm(enrollmentId)
+    UI --> Student : showConfirmation(enrollmentId)
+end
+end
+
+@enduml
+```
+
+MODEL 2 — ORIGINAL CLASS DIAGRAM:
+```plantuml
+@startuml
+title SIS 02 - Course Registration Classes
+
+class Student {
+    +studentId : String
+}
+
+class Course {
+    +code : String
+    +title : String
+}
+
+class CourseOffering {
+    +offeringId : String
+    +semester : String
+    +capacity : int
+    +availablePlaces : int
+}
+
+class Enrollment {
+    +enrollmentId : String
+    +createdAt : DateTime
+}
+
+Course "1" -- "0..*" CourseOffering : has >
+Student "1" -- "0..*" Enrollment : holds >
+CourseOffering "1" -- "0..*" Enrollment : receives >
+
+note right of CourseOffering
+Capacity constraint (R2):
+capacity > 0
+Enrollment count <= capacity
+availablePlaces = capacity - Enrollment count
+end note
+
+note right of Enrollment
+Uniqueness constraint (R3):
+One Student can have at most one
+Enrollment for the same CourseOffering.
+Each Enrollment links exactly one
+Student and one CourseOffering.
+end note
+
+@enduml
+```
+
+APPROVED ACCEPTANCE CRITERIA:
+AC-01 (R1): Given a student selects a semester, When the student opens the catalog, Then the system displays course codes, titles, offerings and available places.
+AC-02 (R1, R2): Given a student views an offering, When the student selects it without registering, Then no place is reserved and availability must be rechecked during registration.
+AC-03 (R2, R3, R4): Given an offering has capacity 2 and zero enrollments, and the student is not enrolled, When the student requests registration, Then the system checks duplicates and capacity, creates exactly one Enrollment, updates the count to 1 and confirms registration.
+AC-04 (R2, R3, R4): Given an offering has capacity 2 and one enrollment, and the student is not enrolled, When registration is requested, Then the system atomically checks duplicates and capacity, creates one Enrollment, updates the count to 2 and confirms registration.
+AC-05 (R3, R5): Given a student is already enrolled in an offering, When the student requests registration again, Then the system returns "already enrolled", creates no Enrollment and leaves the count unchanged.
+AC-06 (R2, R5): Given the catalog previously showed a free place but the current offering is full, and the student is not enrolled, When registration is requested, Then the system returns "course full", creates no Enrollment and leaves the count unchanged.
+
+Please identify genuine defects separately from optional design choices. For every finding, provide the affected rule, exact model element, impact and proposed correction. Check T1, T2, T3 and T4.
 ~~~~
 
 **Response:**
@@ -829,23 +1099,18 @@ The revised models preserve the agreed requirements:
 
 ![Original class diagram](models/img/original-classes.png)
 
+
 ## 13. Appendix D — References and source checks
 
 ### References
 
-<!-- Full references, one per line, each starting with "- ". Only sources you actually opened.
-     Every URL used in the source checks must also appear here. Example:
-     - Sommerville, I. (2016). Software Engineering, 10th ed., Global Edition. Pearson. Ch. 5. -->
-
-- (write here)
+- PlantUML. Sequence Diagram. https://plantuml.com/sequence-diagram (accessed 2026-10-18).
+- PlantUML. Class Diagram. https://plantuml.com/class-diagram (accessed 2026-10-18).
 
 ### Source checks
 
-<!-- At least two modeling decisions you verified. Source and locator: title + slide, page,
-     section, chapter or figure — or title + URL + access date (YYYY-MM-DD). Slide numbers
-     refer to the decks posted in our Teams. -->
-
 | Modeling decision | Source and locator | What the source says | How it supports or changed your model |
 | --- | --- | --- | --- |
-| (write here) | (write here) | (write here) | (write here) |
-| (write here) | (write here) | (write here) | (write here) |
+| Using alt and else for registration outcomes | PlantUML, Sequence Diagram, section "Grouping message", https://plantuml.com/sequence-diagram, accessed 2026-10-19 | The documentation explains how alt and else represent alternative paths in sequence diagrams. | I used three alternatives to show successful registration, duplicate rejection and full-course rejection. |
+| Showing associations and constraints | PlantUML, Class Diagram, sections "Label on relations" and "Notes and stereotypes", https://plantuml.com/class-diagram, accessed 2026-10-19 | The documentation explains multiplicities on class relationships and how notes can describe additional constraints. | I used multiplicities for the relationships between classes and separate notes for capacity and uniqueness constraints. |
+
