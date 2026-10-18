@@ -19,4 +19,3 @@ def can_book(start, end, now, blocked, existing):
 
     # AC5: All acceptance criteria are satisfied.
     return True
-    raise NotImplementedError
