@@ -1,0 +1,45 @@
+
+@startuml
+title SIS 02 - Course Registration Classes
+
+class Student {
+    +studentId : String
+}
+
+class Course {
+    +code : String
+    +title : String
+}
+
+class CourseOffering {
+    +offeringId : String
+    +semester : String
+    +capacity : int
+    +availablePlaces : int
+}
+
+class Enrollment {
+    +enrollmentId : String
+    +createdAt : DateTime
+}
+
+Course "1" -- "0..*" CourseOffering : has >
+Student "1" -- "0..*" Enrollment : holds >
+CourseOffering "1" -- "0..*" Enrollment : receives >
+
+note right of CourseOffering
+Capacity constraint (R2):
+capacity > 0
+Enrollment count <= capacity
+availablePlaces = capacity - Enrollment count
+end note
+
+note right of Enrollment
+Uniqueness constraint (R3):
+One Student can have at most one
+Enrollment for the same CourseOffering.
+Each Enrollment links exactly one
+Student and one CourseOffering.
+end note
+
+@enduml
