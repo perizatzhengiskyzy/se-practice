@@ -1,0 +1,47 @@
+
+# Week 05 — Submission Declaration
+
+schema: 1
+week: "05"
+
+student:
+  name: Zhengiskyzy Perizat
+  student_id: 24B031038
+  github: perizatzhengiskyzy
+
+assistant:
+  tool: ChatGPT
+  model: GPT-6
+
+language:
+  name: python
+  path: A
+
+counts:
+  tests: 23
+  v1_changed: no
+  change_log_rows: 1
+
+checker:
+  pass: 32
+  fail: 0
+  error: 0
+  commit: 7e0ad1b 
+  known_fails: []
+
+assumptions:
+  non_integer_time: not-handled
+
+carried:
+  week04_touching: allowed
+
+review_findings:
+  - "AC1: The initial AI plan suggested datetime objects and seconds, but the contract requires integer minutes after midnight."
+  - "AC4: The implementation uses strict comparisons for detecting overlap, allowing bookings with touching endpoints."
+  - "M9 and M10: The first test suite missed two AC5 mutations. Additional tests for empty and unsorted existing lists detected both faults."
+  - "F1-F10: The original implementation passed all functional checks. The final file differs only by a trailing newline."
+
+honesty:
+  v1_unedited: yes
+  can_explain_overlap_without_ai: yes
+  ai_usage_disclosed: yes
