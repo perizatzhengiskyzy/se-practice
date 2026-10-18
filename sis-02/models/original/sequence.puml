@@ -1,0 +1,57 @@
+
+@startuml
+title SIS 02 - Course Registration Sequence
+
+actor Student
+boundary "Registration UI" as UI
+control "Registration Service" as Service
+database "Registration Store" as Store
+
+Student -> UI : browseCatalog(semester)
+UI -> Store : getCatalogOfferings(semester)
+Store --> UI : code, title, offering, availablePlaces
+UI --> Student : showCatalog()
+
+Student -> UI : selectOffering(offeringId)
+UI --> Student : showOfferingDetails()
+
+note over Student, UI
+Browsing and selection do not reserve places.
+end note
+
+Student -> UI : register(offeringId)
+UI -> Service : register(studentId, offeringId)
+
+group atomic registration
+note over Service, Store
+Final checks, Enrollment creation and
+availability update are one atomic transaction.
+Competing requests cannot take the same last place.
+end note
+
+Service -> Store : checkDuplicate(studentId, offeringId)
+Store --> Service : duplicate
+
+Service -> Store : getCurrentEnrollmentCount(offeringId)
+Store --> Service : count
+
+Service -> Store : getCapacity(offeringId)
+Store --> Service : capacity
+
+alt already enrolled
+    Service --> UI : reject("already enrolled")
+    UI --> Student : showError("already enrolled")
+else course full
+    Service --> UI : reject("course full")
+    UI --> Student : showError("course full")
+else not enrolled and places left
+    Service -> Store : createEnrollment(studentId, offeringId)
+    Store --> Service : enrollmentId
+    Service -> Store : updateAvailability(offeringId)
+    Store --> Service : availablePlaces
+    Service --> UI : confirm(enrollmentId)
+    UI --> Student : showConfirmation(enrollmentId)
+end
+end
+
+@enduml

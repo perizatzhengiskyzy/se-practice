@@ -1,0 +1,37 @@
+# SIS #02 — Submission Declaration
+
+schema: 1
+assignment: "sis-02"
+
+student:
+  name: Perizat Zhengiskyzy
+  student_id: 24B031038
+  group: CSCI-2208
+  github: perizatzhengiskyzy
+
+assistant:
+  tool: ChatGPT (web)
+  model: GPT-6
+
+checker:
+  pass: 43
+  fail: 1
+  error: 0
+  commit: "149e2e8"
+
+counts:
+  stories: 3
+  criteria: 6
+  exchanges: 4
+  review_decisions: 5
+  source_checks: 2
+  explanation_words: 247
+  reflection_words: 177
+
+walkthroughs:
+  T1: pass
+  T2: pass
+  T3: pass
+  T4: pass
+
+known_fails: [E7]

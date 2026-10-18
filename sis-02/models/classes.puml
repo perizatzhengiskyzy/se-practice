@@ -1,0 +1,55 @@
+
+@startuml
+title SIS 02 - Course Registration Classes
+
+class Student {
+    +studentId : String
+}
+
+class Course {
+    +code : String
+    +title : String
+}
+
+class CourseOffering {
+    +offeringId : String
+    +semester : String
+    +capacity : int
+    +availablePlaces : int
+}
+
+class Enrollment {
+    +enrollmentId : String
+    +createdAt : DateTime
+}
+
+Course "1" -- "0..*" CourseOffering : has >
+Student "1" -- "0..*" Enrollment : holds >
+CourseOffering "1" -- "0..*" Enrollment : receives >
+
+note right of CourseOffering
+Capacity constraint (R2):
+capacity > 0
+Enrollment count <= capacity
+
+Availability invariant (R1, R2, R4):
+availablePlaces is maintained data.
+availablePlaces = capacity - Enrollment count
+
+Availability is updated on successful registration.
+Rejected registration leaves availability unchanged.
+end note
+
+note right of Enrollment
+Uniqueness constraint (R3, R5):
+A Student-CourseOffering combination may have
+at most one Enrollment.
+
+Each Enrollment links exactly one Student
+and one CourseOffering.
+
+The uniqueness invariant must be upheld
+within atomic registration.
+end note
+
+@enduml
