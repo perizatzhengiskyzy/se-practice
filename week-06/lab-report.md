@@ -60,7 +60,21 @@ prompt: yes / no
 **Bolt's list of the files/components it created, pasted unedited:**
 
 ```text
-(paste here)
+
+- src/
+- index.html
+- package.json
+- package-lock.json
+- vite.config.ts
+- tailwind.config.js
+- postcss.config.js
+- eslint.config.js
+- tsconfig.json
+- tsconfig.app.json
+- tsconfig.node.json
+- .bolt/
+- .gitignore
+
 ```
 
 **What v1 does — one line per thing that works, or visibly does not:**
