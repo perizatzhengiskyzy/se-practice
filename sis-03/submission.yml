@@ -1,0 +1,33 @@
+schema: 1
+sis: "03"
+
+student:
+  name: "Zhengiskyzy Perizat"
+  student_id: "24B031038"
+  github: "perizatzhengiskyzy"
+
+assistant:
+  tool: "Claude"
+  model: "Claude 3.5 Sonnet"
+  fallback_reason: "none"
+
+counts:
+  python_tests: 12
+  ai_exchanges: 4
+  issue_log_rows: 2
+
+checker:
+  pass: 40
+  fail: 15
+  error: 0
+  commit: b690342
+  known_fails: [R2, R3, B1, M3, M8, M10, W3, W5, G1, E3, C2, I2, A3, X1, X2]
+
+assumptions:
+  end_of_day: "end-of-day-option"
+
+honesty:
+  v1_export_unedited: true
+  screenshots_unedited: true
+  can_explain_code_without_ai: true
+  ai_usage_disclosed: true
