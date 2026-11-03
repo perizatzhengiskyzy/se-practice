@@ -75,7 +75,7 @@ describe('canBook Unit Tests', () => {
     expect(result).toBe(true);
   });
 
-  test('ACS AC4: array non-mutation check', () => {
+  test('ACS AC5: array non-mutation check', () => {
     const original = [{ start: 600, end: 660 }];
     const copy = JSON.parse(JSON.stringify(original));
     canBook({ start: 660, end: 720, now: defaultNow, blocked: false, bookings: original });

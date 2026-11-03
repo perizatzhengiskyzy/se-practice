@@ -1,0 +1,45 @@
+version: 1
+week: "07"
+
+student:
+  name: "Perizat Zhengiskyzy"
+  student_id: "24B031038"
+  github: "perizatzhengiskyzy"
+
+assistant:
+  tool: "ChatGPT"
+  model: "GPT-4o"
+
+project:
+  baseline: "starter"
+  bolt_url: "not-shared"
+  vitest: "v1.6.0"
+
+checker:
+  pass: 33
+  fail: 0
+  error: 0
+  commit: "auto"
+
+counts:
+  tests_first: 17
+  tests_final: 17
+  first_run_failed: 1
+  review_decisions: 2
+  mutants_detected: 3
+
+assumptions:
+  invalid_existing_booking: "returns-false"
+
+review_findings:
+  - "T02 AC1: Verified that booking starting at current minute 'now' is correctly rejected."
+  - "AC4: Confirmed overlapping bookings boundaries correctly detect touching boundaries."
+  - "M1-M3: Verified deliberate mutation testing detects intentional code regressions."
+
+honesty:
+  first_suite_unedited: yes
+  outputs_unedited: yes
+  mutants_restored: yes
+  ai_usage_disclosed: yes
+
+known_fails: []

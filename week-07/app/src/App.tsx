@@ -1,3 +1,4 @@
+import { canBook } from './booking';
 import { useState } from 'react';
 
 // Starter for students with no Week 06 project. The availability decision lives INSIDE this
