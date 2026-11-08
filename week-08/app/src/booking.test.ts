@@ -95,24 +95,22 @@ describe('canBook Unit Tests', () => {
 });
 
 describe('Practice 08 - Bug Reproduction', () => {
-  // BUG-A: Касающиеся интервалы должны возвращать true (нет конфликта)
+  // BUG-A: касание границ должно возвращать true
   test('BUG-A: touching endpoints should be allowed', () => {
-    const bookings = [{ start: 600, end: 720 }]; // 10:00 - 12:00
-    // Запрос 12:00 - 13:00 (касается конца)
-    const result = canBook(bookings, { start: 720, end: 780 });
+    const bookings = [{ start: 600, end: 720 }];
+    const result = canBook({ start: 720, end: 780, now: 0, blocked: false, bookings });
     expect(result).toBe(true);
   });
 
-  // BUG-B: Функция не должна мутировать исходный массив bookings
+  // BUG-B: доступный слот, массив не должен мутировать
   test('BUG-B: canBook should not mutate the original bookings array', () => {
     const originalBookings = [{ start: 600, end: 720 }];
-    const bookingsCopy = JSON.parse(JSON.stringify(originalBookings));
+    const copy = JSON.parse(JSON.stringify(originalBookings));
     
-    // Вызываем с запросом, который не вызывает конфликтов
-    canBook(originalBookings, { start: 780, end: 840 });
+    // Передаем переменную result
+    const result = canBook({ start: 780, end: 840, now: 0, blocked: false, bookings: originalBookings });
 
-    // Проверяем, что исходный массив не изменился
-    expect(originalBookings).toEqual(bookingsCopy);
+    expect(result).toBe(true);
+    expect(originalBookings).toEqual(copy);
   });
 });
-
