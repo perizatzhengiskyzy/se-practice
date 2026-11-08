@@ -1,38 +1,23 @@
-export interface Booking {
-  start: number;
-  end: number;
-}
+// Practice #08 - Fixed Version
 
-export interface CanBookParams {
+export function canBook({ start, end, now, blocked, bookings }: {
   start: number;
   end: number;
   now: number;
   blocked: boolean;
-  bookings: Booking[];
-}
-export function canBook({ start, end, now, blocked, bookings }: CanBookParams): boolean {
-  // AC1: start не может быть меньше или равен now (нельзя бронировать на текущую или прошедшую минуту);
-  // start должен быть меньше end; end не может превышать 1440 (24:00)
-  if (start <= now || start >= end || end > 1440) {
-    return false;
-  }
+  bookings: { start: number; end: number }[];
+}): boolean {
+  if (!(0 <= start && start < end && end <= 1440)) return false;
+  if (!(start > now)) return false;
+  if (end - start > 120) return false;
+  if (blocked) return false;
 
-  // AC2: Максимальная длительность — 120 минут
-  if (end - start > 120) {
-    return false;
-  }
-
-  // AC3: Если ресурс заблокирован
-  if (blocked) {
-    return false;
-  }
-
-  // AC4: Пересечения с существующими бронированиями
+  // FIX BUG-A: используем строгое < и > вместо <= и >=
   for (const b of bookings) {
-    if (start < b.end && end > b.start) {
-      return false;
-    }
+    if (start < b.end && end > b.start) return false;
   }
+
+  // FIX BUG-B: удаляем/закомментируем мутирующий push (bookings.push({ start, end });)
 
   return true;
 }
