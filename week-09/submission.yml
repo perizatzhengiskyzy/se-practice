@@ -1,0 +1,35 @@
+schema: 1
+week: "09"
+
+student:
+  name: Perizat Zhengiskyzy
+  student_id: 24B031038
+  github: perizatzhengiskyzy
+
+assistant:
+  tool: ChatGPT
+  model: not displayed
+  fresh_chats: yes
+
+calls:
+  r3: asked
+  first_run_s_fails: 9
+
+checker:
+  pass: 27
+  fail: 1
+  error: 2
+  commit: 88b533c
+  known_fails: [F4, F5, F6]
+
+review_findings:
+  - "S03-S12: adding integer types, 0-1440 bounds, required arrays, and additionalProperties: false eliminated all 9 first-run schema failures"
+  - "R2: the model failed to emit JSON and asked a redundant question about bookings and blocked status even though both were stated in the prompt"
+  - "R3: the model followed instructions and asked for exact afternoon times instead of guessing start, end, now, blocked, or bookings"
+  - "AC2 and AC4: JSON Schema cannot enforce the 120-minute duration cap or interval overlap rules, so those checks must remain inside canBook"
+
+honesty:
+  definition_written_by_me: no
+  calls_unedited: yes
+  outputs_unedited: yes
+  ai_usage_disclosed: yes
