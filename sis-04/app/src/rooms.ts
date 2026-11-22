@@ -1,0 +1,22 @@
+// Data only: the Room type and the fictional catalog. No rules live here.
+
+export type Interval = { start: number; end: number }; // minutes after midnight, 600 = 10:00
+
+export type Room = {
+  id: string;
+  name: string;
+  capacity: number;
+  equipment: string[];
+  blocked: boolean;
+  bookings: Interval[];
+};
+
+export const EQUIPMENT = ['projector', 'whiteboard', 'computers', 'video-conference'];
+
+export const ROOMS: Room[] = [
+  { id: 'a101', name: 'Lecture Hall A-101', capacity: 40, equipment: ['projector', 'whiteboard'], blocked: false, bookings: [{ start: 600, end: 660 }] },
+  { id: 'b204', name: 'Seminar Room B-204', capacity: 12, equipment: ['whiteboard'], blocked: false, bookings: [] },
+  { id: 'c310', name: 'Computer Lab C-310', capacity: 24, equipment: ['projector', 'computers'], blocked: false, bookings: [{ start: 780, end: 840 }] },
+  { id: 'd015', name: 'Meeting Room D-015', capacity: 8, equipment: ['projector', 'whiteboard', 'video-conference'], blocked: false, bookings: [{ start: 660, end: 720 }] },
+  { id: 'e402', name: 'Studio E-402', capacity: 20, equipment: ['projector', 'whiteboard'], blocked: true, bookings: [] },
+];

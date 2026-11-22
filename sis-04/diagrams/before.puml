@@ -1,0 +1,14 @@
+@startuml
+' STARTING POINT (starter/): one component holds the data, the rules and the UI.
+component "main.tsx" as Main
+component "App.tsx" as App
+component "index.css" as Css
+Main --> App : renders
+Main --> Css : imports
+note right of App
+  ROOMS (2 rooms, no capacity / equipment)
+  toMinutes(), fmt()
+  check(): AC1-AC4 inline
+  "blocked" is a page checkbox
+end note
+@enduml

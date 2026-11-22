@@ -1,0 +1,44 @@
+schema: 1
+assignment: "sis-04"            # do not edit
+
+student:
+  name: Perizat Zhengiskyzy                          # as in the university register
+  student_id: 24B031038                  # e.g. 00X000000
+  group: CSCI-2208                       # your group code, as in the timetable
+  github: perizatzhengiskyzy                      # username only, not a URL
+
+assistant:
+  tool: Claude.ai (web)
+  model: Claude Sonnet 5.5
+
+project:
+  start_from: starter
+  baseline_commit: ef37db9
+  language: ts
+  vitest: 3.2.7
+
+counts:
+  rooms: 5
+  tests_original: 0
+  tests_final: 16
+  risks: 5
+  exchanges: 3
+
+checker:
+  pass: 33         # из последнего прогона, см. ниже
+  fail: 0
+  error: 0
+  commit: 75680f9
+  known_fails: []
+
+review_findings:
+  - "AC6: the assistant's page shows one general Unavailable message instead of the starter's specific end-before-start error; I recorded it as a modified suggestion (3.3) and as the limitation in section 7"
+  - "A7: my first baseline commit contained node_modules because there was no .gitignore; I undid the commit, added sis-04/.gitignore and committed again"
+  - "F5: the starter's select onChange kept the old result on screen; the page now clears it when the room changes, shown by evidence/switch-a.png and switch-b.png, while T14 checks that checkRoom uses each room's own bookings"
+  - "INT: the assistant could not run Vitest in its environment, so I ran npx vitest run myself in sis-04/app: 16 passed, including T15 (filterRooms then checkRoom)"
+
+honesty:
+  baseline_unchanged: yes
+  runs_unedited: yes
+  no_invented_metrics: yes
+  ai_usage_disclosed: yes
