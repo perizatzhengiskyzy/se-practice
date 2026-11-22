@@ -12,3 +12,12 @@ button { margin-top: 1rem; padding: 0.6rem 1.2rem; border: 0; border-radius: 8px
   .page { margin: 0; border-radius: 0; }
   .row { flex-direction: column; }
 }
+h2 { font-size: 1.05rem; margin: 1.5rem 0 0.5rem; }
+input[type="number"] { width: 6rem; }
+.rooms { list-style: none; padding: 0; display: grid; gap: 0.5rem; margin: 1rem 0 0; }
+.room button { all: unset; box-sizing: border-box; width: 100%; display: flex; flex-direction: column; gap: 0.2rem; padding: 0.7rem 0.9rem; border: 1px solid #c9d2e0; border-radius: 8px; cursor: pointer; margin: 0; }
+.room.selected button { border-color: #16233a; box-shadow: 0 0 0 2px #16233a; }
+.room .meta { font-size: 0.85rem; color: #4a5a75; }
+.tag { align-self: flex-start; background: #c0392b; color: white; font-size: 0.75rem; padding: 0 0.5rem; border-radius: 999px; }
+.empty { margin-top: 1rem; padding: 0.8rem; background: #fdf3e7; border-radius: 8px; color: #7a4b00; }
+.why { font-weight: 400; color: #4a5a75; }

@@ -1,12 +1,14 @@
-' diagrams/before.puml — the modules and components of your STARTING POINT and what depends on what.
-' Replace this stub. A component diagram is enough, for example:
-'
-'   @startuml
-'   component "App.tsx" as App
-'   component "booking.ts" as Booking
-'   App --> Booking : canBook()
-'   note right of App : rooms, times and the result all live here
-'   @enduml
-'
 @startuml
+' STARTING POINT (starter/): one component holds the data, the rules and the UI.
+component "main.tsx" as Main
+component "App.tsx" as App
+component "index.css" as Css
+Main --> App : renders
+Main --> Css : imports
+note right of App
+  ROOMS (2 rooms, no capacity / equipment)
+  toMinutes(), fmt()
+  check(): AC1-AC4 inline
+  "blocked" is a page checkbox
+end note
 @enduml

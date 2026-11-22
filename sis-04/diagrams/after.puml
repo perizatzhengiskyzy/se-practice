@@ -1,5 +1,25 @@
-' diagrams/after.puml — the same view of your FINAL code. It must show rooms, booking, filter
-' and the UI (App and any components), with an arrow for each import. Replace this stub.
-'
 @startuml
+' FINAL CODE: data, rules, filter and UI are separate; every arrow is an import.
+component "main.tsx" as Main
+component "App.tsx" as App
+component "FilterPanel.tsx" as FilterPanel
+component "RoomList.tsx" as RoomList
+component "CheckPanel.tsx" as CheckPanel
+component "time.ts" as Time
+component "rooms.ts\n(Room, ROOMS, EQUIPMENT)" as Rooms
+component "filter.ts\nfilterRooms (F1, F2)" as Filter
+component "booking.ts\ncanBook (AC1-AC5), checkRoom (F3, F5)" as Booking
+Main --> App
+App --> FilterPanel
+App --> RoomList
+App --> CheckPanel
+App --> Rooms : ROOMS
+App --> Filter : filterRooms
+App --> Booking : checkRoom
+App --> Time : toMinutes
+FilterPanel --> Rooms : EQUIPMENT
+RoomList --> Time : fmt
+RoomList ..> Rooms : type Room
+Filter ..> Rooms : type Room
+Booking ..> Rooms : type Room
 @enduml
