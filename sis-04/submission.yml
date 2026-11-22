@@ -1,3 +1,12 @@
+schema: 1
+assignment: "sis-04"            # do not edit
+
+student:
+  name: Perizat Zhengiskyzy                          # as in the university register
+  student_id: 24B031038                  # e.g. 00X000000
+  group: CSCI-2208                       # your group code, as in the timetable
+  github: perizatzhengiskyzy                      # username only, not a URL
+
 assistant:
   tool: Claude.ai (web)
   model: Claude Sonnet 5.5
@@ -16,10 +25,10 @@ counts:
   exchanges: 3
 
 checker:
-  pass:         # из последнего прогона, см. ниже
-  fail:
-  error:
-  commit:
+  pass: 33         # из последнего прогона, см. ниже
+  fail: 0
+  error: 0
+  commit: 75680f9
   known_fails: []
 
 review_findings:
