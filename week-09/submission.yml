@@ -19,7 +19,7 @@ checker:
   pass: 27
   fail: 1
   error: 2
-  commit: 88b533c
+  commit: 923fdb7
   known_fails: [F4, F5, F6]
 
 review_findings:
