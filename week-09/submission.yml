@@ -8,7 +8,7 @@ student:
 
 assistant:
   tool: ChatGPT
-  model: not displayed
+  model: GPT-6
   fresh_chats: yes
 
 calls:

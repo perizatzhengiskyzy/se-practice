@@ -221,3 +221,5 @@ Paste this whole output into lab-report.md section 8, and these three numbers in
 ## 10. Conclusion (80–150 words)
 
 Working through `check_room` showed the strict boundary between schema validation, model reasoning, and domain logic. In Part 1, adding `"type": "integer"`, `0`–`1440` bounds, `"required"`, and `"additionalProperties": false` stopped malformed shapes like S03 (`"11:00"`) and S05 (`"room": "204"`), yet JSON Schema cannot enforce relational rules such as AC2 (`end - start <= 120`) or AC4 overlaps, which belong inside `canBook`. In Part 2, the model handled R1 accurately and appropriately asked for missing times in R3, but failed R2 by asking a redundant question instead of emitting JSON for an unavailable blocked slot. Finally, Part 3 demonstrated why agent permissions must separate safe read-only checks like A1 and A4 from destructive or irreversible actions like A5 (`git reset --hard`), A7 (`git push` to `main`), and A8 (leaking `.env`).
+
+
