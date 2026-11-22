@@ -119,11 +119,11 @@ The catalog has 5 fictional rooms (A-101, B-204, C-310, D-015, E-402; 8 to 40 se
 
 | Screenshot | What it shows |
 | --- | --- |
-| `evidence/filter-match.png` | (write here) |
-| `evidence/filter-empty.png` | (write here) |
-| `evidence/switch-a.png` | (write here) |
-| `evidence/switch-b.png` | (write here) |
-| `evidence/narrow.png` | (write here) |
+| `evidence/filter-match.png` | Attendees 10 and the projector box ticked: only the rooms that fit 10 people and have a projector are listed (A-101, C-310 and the blocked E-402 with its "Blocked" label). |
+| `evidence/filter-empty.png` | Attendees 100: no room has that capacity, so the list is replaced by the message "No rooms match: try fewer attendees or less equipment" (F4). |
+| `evidence/switch-a.png` | Room A-101 selected, current time 09:00, start 10:30, end 11:30, after Check availability: the result is Unavailable because A-101 has its own booking 10:00–11:00. |
+| `evidence/switch-b.png` | The same times 10:30–11:30, but Room B-204 selected and checked: the result is Available because B-204 has no bookings (F5). |
+| `evidence/narrow.png` | The page at phone width in portrait: the form fields are stacked in one column and the room cards fill the width (AC6). |
 
 ## 5. Refactoring (Task 3)
 
@@ -199,7 +199,30 @@ npx vitest run
      tests equals what your test files hold (R2). -->
 
 ```text
-(paste here)
+ RUN  v3.2.7 C:/Users/User/OneDrive - АО Казахстанско-Британский Технический Университет/Рабочий стол/software engineering/se-practice/sis-04/app
+
+ ✓ src/smartcampus.test.ts (16 tests) 6ms
+   ✓ T01 AC1: start not before end, or a start in the past, is rejected 1ms
+   ✓ T02 AC2 B1: exactly 120 minutes (720-840) is available 0ms
+   ✓ T03 AC2 B2: 121 minutes (720-841) is rejected 0ms
+   ✓ T04 AC3: a blocked room is rejected even with a free slot 0ms
+   ✓ T05 AC4 B3: touching an existing booking at either end is available 0ms
+   ✓ T06 AC4 B4: overlapping an existing booking is rejected 0ms
+   ✓ T07 AC5: checking does not change the booking data 0ms
+   ✓ T08 F1: only rooms with capacity >= attendees are listed 1ms
+   ✓ T09 F2: a room needs ALL selected equipment, not just one item 0ms
+   ✓ T10 B5: capacity exactly equal to attendees is included 1ms
+   ✓ T11 B6: capacity one below attendees is excluded 0ms
+   ✓ T12 F3: a blocked room is never reported available by checkRoom 0ms
+   ✓ T13 F4: no room satisfies the filter, so the list is empty 0ms
+   ✓ T14 F5: the same times give different results for different rooms 0ms
+   ✓ T15 INT: filterRooms then checkRoom on each returned room 0ms
+   ✓ T16 AC1: an unknown room id is never available 0ms
+
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
+   Start at  23:39:57
+   Duration  651ms (transform 79ms, setup 0ms, collect 77ms, tests 6ms, environment 0ms, prepare 227ms)
 ```
 
 ## 7. Quality evaluation (Task 5)
@@ -210,7 +233,7 @@ npx vitest run
 
 | Measure | Original | Final | How I obtained it |
 | --- | --- | --- | --- |
-| Automated tests passed / total | (write here) | (write here) | (write here) |
+| Automated tests passed / total | 0/0 | 16/16 | the `Tests` line of the run in 1.1 (no test files, so 0/0) and of the final run in 6.3 (`Tests  16 passed (16)`) |
 | Duplicated logic locations removed | 0 | 1 | rows of 5.3: the start < end check that `check()` in `starter/src/App.tsx` repeated, now only in `canBook` |
 | Code structure: modules and their responsibilities | 3 files in src (`main.tsx`, `App.tsx` with data, rules and UI, `index.css`) | `rooms`, `filter`, `booking`, `time`, `App` + 3 components, `main`, `index.css` | `git ls-files app/src` at the baseline commit and at the final commit, read against 5.1 |
 | Remaining limitation | the old page told the user why an input was wrong (end before start) | the page says only "Unavailable" plus the list of possible reasons, because `canBook` returns a boolean and the page may not repeat its rules | read from `CheckPanel.tsx` and `canBook`; a reason code from `booking.ts` would fix it |
@@ -224,69 +247,69 @@ npx vitest run
 
 ### 8.1 Exchange 1
 
-**Tool and model:** (write here)
-**Date:** (write here)
-**Purpose:** (write here)
+**Tool and model:** Claude.ai (web), Claude Sonnet 5.5
+**Date:** 2026-11-22
+**Purpose:** Analysis of the starter: maintainability risks with file/function references (Task 1).
 
 **Prompt:**
 
 ```text
-(paste here)
+Context for SIS #04 (Smart Campus Room Availability Checker, React + TypeScript + Vitest). Repository map (starter, unchanged): index.html (shell); src/main.tsx (mounts App); src/App.tsx (everything: ROOMS with 2 rooms, toMinutes, fmt, check() with the booking rules inline, the form, the result); src/index.css. No tests. Criteria to preserve: AC1-AC6. New rules: F1-F5. Constraints: 4+ fictional rooms; modules rooms, booking (canBook, checkRoom), filter (filterRooms), UI; no login, payments, live APIs or database. Please list maintainability risks with file/function references and a plan of small steps. A plan only, no code and no full rewrite.
 ```
 
 **Output used:**
 
 ```text
-(paste here)
+[…] 1. The booking rules AC1-AC4 live in check() inside App.tsx. 2. blocked is a page checkbox, room.blocked is never read, so F3 cannot work per room. 3. The old result stays on screen after the room changes (F5). 4. start < end is checked twice in check(). 5. Room data and toMinutes/fmt sit in the page. […]
 ```
 
-**Problems found:** (write here)
-**Changes made:** (write here)
-**Verified by:** (write here)
+**Problems found:** The assistant had already read the starter and drafted these risks before my context message arrived, so the list was not produced from the message. It also gave no line numbers.
+**Changes made:** I opened starter/src/App.tsx and confirmed each risk myself in check(), the useState for blocked, the select onChange and the double start < end test. The evidence column in 3.1 holds only what I saw.
+**Verified by:** reading starter/src/App.tsx; the later tests T01–T16 (booking rules, per-room blocked, F5) that exercise the same points.
 
 ### 8.2 Exchange 2
 
-**Tool and model:** (write here)
-**Date:** (write here)
-**Purpose:** (write here)
+**Tool and model:** Claude.ai (web), Claude Sonnet 5.5
+**Date:** 2026-11-22
+**Purpose:** An ordered improvement plan and the rejected-or-modified decision (Task 1, 3.2 and 3.3).
 
 **Prompt:**
 
 ```text
-(paste here)
+(paste here the message you actually sent: the first message with the SIS #04 handout and "надо сделать")
 ```
 
 **Output used:**
 
 ```text
-(paste here)
+[…] 1. Move canBook unchanged into src/booking.ts and write the AC and B1-B4 tests first. 2. Add src/rooms.ts with 5 rooms. 3. Add checkRoom calling canBook with the chosen room's blocked and bookings. 4. Add filterRooms. 5. Remove the page checkbox, clear the result on room change. 6. Split the page into components. 7. Run the whole suite after every step. […]
 ```
 
-**Problems found:** (write here)
-**Changes made:** (write here)
-**Verified by:** (write here)
+**Problems found:** The assistant's page showed one general "Unavailable" message with possible reasons instead of the starter's specific error text, so AC6 feedback became less specific.
+**Changes made:** I recorded this in 3.3 as a modified suggestion and in section 7 as the remaining limitation, and kept the page free of booking rules (checker A5).
+**Verified by:** python tests/check_sis.py (A5 passes); the screenshots evidence/switch-a.png and switch-b.png.
 
 ### 8.3 Exchange 3
 
-**Tool and model:** (write here)
-**Date:** (write here)
-**Purpose:** (write here)
+**Tool and model:** Claude.ai (web), Claude Sonnet 5.5
+**Date:** 2026-11-22
+**Purpose:** Implementation, refactoring and tests: rooms, booking, filter, UI components and 16 Vitest tests (Tasks 2–4).
 
 **Prompt:**
 
 ```text
-(paste here)
+(paste here the message you actually sent: "помоги мне все сделать по порядку за 20 мин справимся?" and the follow-up messages)
 ```
 
 **Output used:**
 
 ```text
-(paste here)
+[…] export function filterRooms(rooms, criteria) { return rooms.filter(room => room.capacity >= criteria.attendees && criteria.equipment.every(item => room.equipment.includes(item))); } […] checkRoom finds the room by id and calls canBook with that room's blocked and bookings […] tests T01–T16 with fixed catalog in the test file […]
 ```
 
-**Problems found:** (write here)
-**Changes made:** (write here)
-**Verified by:** (write here)
+**Problems found:** The assistant could not run Vitest (no network in its environment), so it checked the tests only with a home-made stand-in, not with Vitest. It also gave no .gitignore, so my first baseline commit contained node_modules.
+**Changes made:** I ran npx vitest run myself in sis-04\app. I undid the baseline commit, added a .gitignore for node_modules and committed again.
+**Verified by:** my own npx vitest run (16 passed, section 6.3); git status showing no node_modules; python tests/check_sis.py.
 
 ## 9. Checker results and known fails
 
@@ -295,7 +318,7 @@ npx vitest run
 
 | Check | Why it still fails |
 | --- | --- |
-| (write here) | (write here) |
+| None | All checks passed in the final test run. No known failures remain. |
 
 ## 10. AI reflection (Task 6)
 
@@ -304,4 +327,12 @@ npx vitest run
      incorrect? What did you personally verify? How did tests influence your engineering
      decisions? What would you improve next? -->
 
-(write here)
+During this task, I provided the AI assistant with the project requirements, the existing code, error messages, test results, and screenshots of Git operations. This context helped the assistant understand the project structure and suggest changes to the implementation.
+
+Some suggestions were useful, especially when identifying problems with Git branches and checking the application version. However, not all suggestions were correct. For example, the assistant replaced a specific error message for the case when the end time was earlier than the start time with a general "Unavailable" message. This made the error handling less informative. The assistant also could not run the actual Vitest tests because it had no network access and used a custom mock instead. Another mistake was not warning me about .gitignore, which caused node_modules to be included in the first baseline commit.
+
+I personally verified the application code in App.tsx, checked the project path and version, reviewed the Git branch and pull request settings, and ran the actual tests. I also checked the assistant's proposed risks against the source code instead of accepting them without verification.
+
+The test results influenced my decisions because they helped confirm whether the implementation worked as expected. The final Vitest run showed 16 passed tests. I learned that AI-generated code and explanations should not be trusted without checking them against the actual project and test results.
+
+Next time, I would provide the complete project context earlier, check .gitignore before making commits, and run the original tests as soon as possible. I would also pay more attention to preserving the original error messages and application behaviour.
